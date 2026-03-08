@@ -3,6 +3,7 @@ backend/.env
 backend/uploads/gallery/*
 !backend/uploads/gallery/.gitkeep
 backend/api
+backend/tmp
 
 # Frontend
 frontend/node_modules/
