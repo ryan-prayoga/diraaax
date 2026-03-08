@@ -1,0 +1,14 @@
+# Backend
+backend/.env
+backend/uploads/gallery/*
+!backend/uploads/gallery/.gitkeep
+backend/api
+
+# Frontend
+frontend/node_modules/
+frontend/.svelte-kit/
+frontend/build/
+frontend/.env
+
+# OS
+.DS_Store
