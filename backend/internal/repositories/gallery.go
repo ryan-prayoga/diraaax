@@ -41,7 +41,7 @@ func (r *GalleryRepository) Create(ctx context.Context, title string, caption *s
 	var g models.GalleryItem
 	err := r.pool.QueryRow(ctx,
 		`INSERT INTO gallery_items (title, caption, category, image_filename, image_path, taken_at, uploaded_by)
-		 VALUES ($1, $2, $3, $4, $5, $6, $7)
+		 VALUES ($1, $2, COALESCE($3, 'random'), $4, $5, $6, $7)
 		 RETURNING id, title, caption, category, image_filename, image_path, taken_at, uploaded_by, created_at`,
 
 		title, caption, category, fileName, filePath, takenAt, uploadedBy,

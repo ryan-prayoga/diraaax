@@ -7,7 +7,7 @@
 	let showForm = $state(false);
 	let title = $state('');
 	let caption = $state('');
-	let category = $state('moment');
+	let category = $state('random');
 	let takenAt = $state('');
 	let imageFile: File | null = $state(null);
 	let submitting = $state(false);
@@ -49,7 +49,7 @@
 			await api.uploadImage(formData);
 			title = '';
 			caption = '';
-			category = 'moment';
+			category = 'random';
 			takenAt = '';
 			imageFile = null;
 			showForm = false;
@@ -112,12 +112,11 @@
 					bind:value={category}
 					class="px-4 py-2.5 rounded-xl border border-pink-100 focus:border-pink-300 focus:outline-none text-sm bg-pink-50/30"
 				>
-					<option value="moment">Moment</option>
+					<option value="random">Random</option>
 					<option value="selfie">Selfie</option>
 					<option value="date">Date</option>
-					<option value="travel">Travel</option>
-					<option value="food">Food</option>
-					<option value="other">Other</option>
+					<option value="pap_cantik">Pap Cantik</option>
+					<option value="ml">ML</option>
 				</select>
 				<input
 					type="date"
