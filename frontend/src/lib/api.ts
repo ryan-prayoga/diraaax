@@ -1,4 +1,6 @@
-const API_BASE = import.meta.env.PUBLIC_API_BASE_URL ?? "";
+import { PUBLIC_API_BASE_URL } from "$env/static/public";
+
+const API_BASE = PUBLIC_API_BASE_URL.replace(/\/$/, "");
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
