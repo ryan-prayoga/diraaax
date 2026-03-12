@@ -1,7 +1,11 @@
-import { sveltekit } from "@sveltejs/kit/vite";
-import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
+import { sveltekit } from "@sveltejs/kit/vite";
 
 export default defineConfig({
-  plugins: [tailwindcss(), sveltekit()],
+  plugins: [sveltekit()],
+  preview: {
+    host: "127.0.0.1",
+    port: 4001,
+    allowedHosts: ["diraaax.ryannn.net"],
+  },
 });
