@@ -1,30 +1,240 @@
 @import "tailwindcss";
 
+/* ==========================================
+   diraaax v2 — Design System
+   ========================================== */
+
+@theme {
+  --color-rose-bg: #FFF7FB;
+  --color-rose-soft: #FCE7F3;
+  --color-rose-accent: #EC4899;
+  --color-rose-deep: #BE185D;
+  --color-rose-text: #7C2D5A;
+  --color-rose-muted: #D4A0B9;
+  --color-rose-glow: rgba(236, 72, 153, 0.08);
+  --color-rose-shadow: rgba(236, 72, 153, 0.15);
+}
+
+/* ── Base ────────────────────────────────── */
 :root {
-  --pink-50: #fdf2f8;
-  --pink-100: #fce7f3;
-  --pink-200: #fbcfe8;
-  --pink-300: #f9a8d4;
-  --pink-400: #f472b6;
-  --pink-500: #ec4899;
-  --pink-600: #db2777;
-  --pink-700: #be185d;
-  --pink-800: #9d174d;
-  --pink-900: #831843;
+  --font-heading: 'Nunito', 'Fredoka', sans-serif;
+  --font-body: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family:
-    "Segoe UI",
-    system-ui,
-    -apple-system,
-    sans-serif;
-  background: linear-gradient(
-    135deg,
-    var(--pink-50) 0%,
-    #fff5f9 50%,
-    var(--pink-100) 100%
-  );
+  font-family: var(--font-body);
+  background: var(--color-rose-bg);
   min-height: 100vh;
-  color: #4a2040;
+  color: var(--color-rose-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+/* ── Card ────────────────────────────────── */
+.love-card {
+  background: white;
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-rose-soft);
+  box-shadow: 0 10px 30px var(--color-rose-glow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.love-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(236, 72, 153, 0.12);
+}
+
+.love-card-static {
+  background: white;
+  border-radius: 1.5rem;
+  border: 1px solid var(--color-rose-soft);
+  box-shadow: 0 10px 30px var(--color-rose-glow);
+}
+
+/* ── Button ──────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, #EC4899, #F472B6);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #DB2777, #EC4899);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--color-rose-accent);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 1rem;
+  border: 2px solid var(--color-rose-soft);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--color-rose-soft);
+  border-color: var(--color-rose-accent);
+}
+
+/* ── Animations ──────────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes floatHeart {
+  0% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(360deg) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-float-heart {
+  animation: floatHeart 8s ease-in infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* ── Skeleton loading ────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-rose-soft) 25%,
+    #FFE4F0 37%,
+    var(--color-rose-soft) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 0.75rem;
+}
+
+/* ── Scrollbar ───────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-rose-muted);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-rose-accent);
+}
+
+/* ── Page transition ─────────────────────── */
+.page-container {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .page-container {
+    padding: 0 1.5rem;
+  }
+}
+
+/* ── Polaroid card ───────────────────────── */
+.polaroid {
+  background: white;
+  padding: 0.75rem;
+  padding-bottom: 2.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transform: rotate(var(--rotation, 0deg));
+  transition: transform 0.3s ease;
+}
+
+.polaroid:hover {
+  transform: rotate(0deg) scale(1.05);
+  z-index: 10;
 }

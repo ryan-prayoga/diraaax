@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { api } from '$lib/api';
-	import { checkAuth } from '$lib/auth';
+	import { auth } from '$lib/api';
+	import { checkAuth } from '$lib/stores/auth';
+	import FloatingHearts from '$lib/components/ui/FloatingHearts.svelte';
 
 	let pin = $state('');
 	let error = $state('');
@@ -11,17 +12,19 @@
 		e.preventDefault();
 		const normalizedPin = pin.trim();
 		if (!normalizedPin) {
-			error = 'Please enter the access code';
+			error = 'Masukkan kode akses ya 💕';
 			return;
 		}
 		error = '';
 		loading = true;
 		try {
-			await api.verifyPin(normalizedPin);
+			await auth.verifyPin(normalizedPin);
 			await checkAuth();
 			goto('/dashboard');
 		} catch (err: any) {
-			error = err.message === 'invalid_pin' ? 'Invalid access code' : (err.message || 'Something went wrong');
+			error = err.message === 'invalid_pin'
+				? 'Kode akses salah, coba lagi ya 🥺'
+				: (err.message || 'Terjadi kesalahan');
 		} finally {
 			loading = false;
 		}
@@ -29,35 +32,41 @@
 </script>
 
 <svelte:head>
-	<title>Login - diraaax</title>
+	<title>Login — diraaax 💕</title>
 </svelte:head>
 
-<div class="min-h-[80vh] flex items-center justify-center px-4">
+<FloatingHearts count={12} />
+
+<div class="min-h-[85vh] flex items-center justify-center px-4 relative z-10">
 	<div class="w-full max-w-sm">
-		<div class="bg-white rounded-3xl shadow-lg shadow-pink-100 p-8 border border-pink-100">
+		<!-- Login Card -->
+		<div class="love-card-static p-8 md:p-10 animate-fade-in-up bg-white/90 backdrop-blur-sm">
 			<div class="text-center mb-8">
-				<h1 class="text-3xl font-bold text-pink-500 mb-2">diraaax</h1>
-				<p class="text-pink-300 text-sm">Ryan & Dira's Private Space</p>
-				<p class="text-pink-200 text-xs mt-1">Maboyyy & Magirll</p>
+				<div class="text-4xl mb-4 animate-pulse-soft">💕</div>
+				<h1 class="text-4xl font-extrabold bg-gradient-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent mb-2">
+					diraaax
+				</h1>
+				<p class="text-rose-muted text-sm font-medium">Ryan & Dira's Private Space</p>
+				<p class="text-pink-300 text-xs mt-1">Maboyyy & Magirll</p>
 			</div>
 
-			<form onsubmit={handleSubmit} class="space-y-4">
+			<form onsubmit={handleSubmit} class="space-y-5">
 				<div>
-					<label for="pin" class="block text-sm font-medium text-pink-400 mb-2">
+					<label for="pin" class="block text-sm font-semibold text-rose-muted mb-2">
 						Access Code
 					</label>
 					<input
 						id="pin"
 						type="password"
 						bind:value={pin}
-						placeholder="Enter your secret code..."
-						class="w-full px-4 py-3 rounded-2xl border-2 border-pink-100 focus:border-pink-300 focus:outline-none text-center text-lg tracking-widest bg-pink-50/50 placeholder:text-pink-200 placeholder:tracking-normal placeholder:text-sm transition-colors"
+						placeholder="Masukkan kode rahasia..."
+						class="w-full px-5 py-3.5 rounded-2xl border-2 border-pink-100 focus:border-pink-400 focus:outline-none text-center text-lg tracking-[0.3em] bg-pink-50/30 placeholder:text-pink-200 placeholder:tracking-normal placeholder:text-sm transition-all duration-300 focus:shadow-[0_0_20px_rgba(236,72,153,0.15)]"
 						autocomplete="off"
 					/>
 				</div>
 
 				{#if error}
-					<div class="text-red-400 text-sm text-center bg-red-50 rounded-xl p-2">
+					<div class="text-red-400 text-sm text-center bg-red-50 rounded-2xl p-3 animate-fade-in border border-red-100">
 						{error}
 					</div>
 				{/if}
@@ -65,15 +74,15 @@
 				<button
 					type="submit"
 					disabled={loading}
-					class="w-full bg-pink-400 hover:bg-pink-500 disabled:bg-pink-200 text-white font-medium py-3 rounded-2xl transition-colors shadow-md shadow-pink-200"
+					class="w-full btn-primary py-4 text-base rounded-2xl"
 				>
-					{loading ? 'Checking...' : 'Enter Our World 💕'}
+					{loading ? '💭 Checking...' : 'Enter Our World 💕'}
 				</button>
 			</form>
 		</div>
 
-		<p class="text-center text-pink-200 text-xs mt-6">
-			Made with love for us
+		<p class="text-center text-pink-300 text-xs mt-8 animate-fade-in" style="animation-delay: 0.5s">
+			Made with love, for us 💗
 		</p>
 	</div>
 </div>

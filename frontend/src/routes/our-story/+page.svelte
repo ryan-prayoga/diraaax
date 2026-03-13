@@ -1,133 +1,122 @@
+<script lang="ts">
+	import FloatingHearts from '$lib/components/ui/FloatingHearts.svelte';
+
+	const storyChapters = [
+		{
+			emoji: '🤖',
+			date: 'Oktober 2025',
+			title: 'Pertemuan Pertama (di Dunia Maya)',
+			content: 'Semua berawal dari sebuah bot Telegram bernama Leomatchbot. Dua orang yang tidak saling kenal, dipertemukan oleh takdir digital. Siapa sangka sebuah "match" bisa mengubah segalanya? 💫'
+		},
+		{
+			emoji: '💌',
+			date: '22 Oktober 2025',
+			title: 'Ryan Kirim Love Pertama',
+			content: 'Ryan adalah yang pertama mengirimkan love. Awalnya hanya sebuah keberanian kecil, tapi ternyata itu adalah langkah pertama menuju sesuatu yang sangat indah. 💕'
+		},
+		{
+			emoji: '💬',
+			date: 'Oktober - November 2025',
+			title: 'Chat yang Jarang',
+			content: 'Di awal, chat-chat masih jarang dan malu-malu. Pesan singkat yang kadang lama dibalas, tapi setiap notifikasi selalu bikin jantung berdebar. 🦋'
+		},
+		{
+			emoji: '🌸',
+			date: 'November 2025',
+			title: 'Semakin Dekat',
+			content: 'Perlahan tapi pasti, percakapan menjadi lebih dalam dan intens. Dari chat random menjadi curhat, berbagi cerita, dan saling mengenal lebih jauh. Setiap hari rasanya tidak cukup tanpa ngobrol. 💗'
+		},
+		{
+			emoji: '🎮',
+			date: 'November - Desember 2025',
+			title: 'Dira Jadi Support ML Ryan',
+			content: 'Dira selalu ada untuk men-support Ryan di Mobile Legends. Bukan cuma di game, tapi juga di kehidupan nyata. Ini menjadi salah satu bonding terkuat yang membuat hubungan semakin erat. 🎮💖'
+		},
+		{
+			emoji: '🥰',
+			date: '14 Desember 2025',
+			title: 'Ketemu Pertama Kali!',
+			content: 'Hari yang ditunggu-tunggu akhirnya datang. Pertemuan pertama secara langsung! Semua keraguan hilang, semua deg-degan terbayar. Ternyata nyata jauh lebih indah dari layar. 🌟'
+		},
+		{
+			emoji: '💍',
+			date: '12 Desember 2025',
+			title: 'Tanggal Anniversary',
+			content: 'Tanggal 12 Desember 2025 dipilih sebagai tanggal anniversary resmi. Hari yang menandai dimulainya babak baru — bukan lagi dua orang yang saling mengenal, tapi dua orang yang saling memilih. 💕'
+		},
+		{
+			emoji: '💕',
+			date: 'Sekarang & Selamanya',
+			title: 'Maboyyy & Magirll',
+			content: 'Ryan dan Dira. Maboyyy dan Magirll. Dua orang yang dipertemukan takdir, disatukan oleh cinta, dan berharap bersama selamanya. Perjalanan ini masih panjang, dan setiap harinya akan diisi dengan cinta, tawa, dan kenangan indah bersama. ∞ 💖'
+		}
+	];
+</script>
+
 <svelte:head>
-	<title>Our Story - diraaax</title>
+	<title>Our Story — diraaax 💕</title>
 </svelte:head>
 
-<div class="space-y-4">
-	<div class="text-center mb-6">
-		<h1 class="text-2xl font-bold text-pink-500">💕 Our Story</h1>
-		<p class="text-pink-300 text-sm mt-1">Ryan & Dira</p>
+<FloatingHearts count={6} />
+
+<div class="relative z-10 space-y-6">
+	<!-- Hero -->
+	<div class="text-center py-6 md:py-10 animate-fade-in-up">
+		<div class="text-5xl mb-4 animate-pulse-soft">💕</div>
+		<h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent mb-2">
+			Our Love Story
+		</h1>
+		<p class="text-rose-muted text-sm">Ryan & Dira • Maboyyy & Magirll</p>
+		<p class="text-pink-300 text-xs mt-1">Cerita yang dimulai dari sebuah bot Telegram 🤖💕</p>
 	</div>
 
-	<!-- Timeline -->
+	<!-- Story Timeline -->
 	<div class="relative">
-		<div class="absolute left-5 top-0 bottom-0 w-0.5 bg-pink-100"></div>
+		<!-- Vertical line -->
+		<div class="absolute left-5 top-0 bottom-0 w-0.5 bg-gradient-to-b from-pink-400 via-pink-300 to-pink-100"></div>
 
-		<div class="space-y-6">
-			<!-- First Match -->
-			<div class="relative flex gap-4">
-				<div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0 z-10 border-2 border-white shadow-sm">
-					<span class="text-sm">💬</span>
-				</div>
-				<div class="bg-white rounded-2xl shadow-md shadow-pink-50 p-4 border border-pink-100 flex-1">
-					<h3 class="font-semibold text-pink-500 text-sm">The Beginning</h3>
-					<p class="text-pink-400 text-sm mt-1">
-						It all started on <strong>Telegram</strong>, through a matchmaking bot called
-						<strong>Leomatchbot</strong>. Fate brought Ryan and Dira together in the most
-						unexpected way.
-					</p>
-				</div>
-			</div>
+		<div class="space-y-8">
+			{#each storyChapters as chapter, i}
+				<div
+					class="relative pl-14 animate-fade-in-up"
+					style="animation-delay: {(i + 1) * 200}ms"
+				>
+					<!-- Timeline dot -->
+					<div class="absolute left-2.5 top-3 w-6 h-6 bg-white border-[3px] border-pink-400 rounded-full flex items-center justify-center z-10 shadow-md">
+						<span class="text-xs">{chapter.emoji}</span>
+					</div>
 
-			<!-- First Message -->
-			<div class="relative flex gap-4">
-				<div class="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center flex-shrink-0 z-10 border-2 border-white shadow-sm">
-					<span class="text-sm">💌</span>
+					<div class="love-card-static p-5 md:p-6">
+						<p class="text-xs text-pink-400 font-semibold uppercase tracking-wider mb-1">
+							{chapter.date}
+						</p>
+						<h3 class="text-lg font-bold text-rose-deep mb-2">
+							{chapter.title}
+						</h3>
+						<p class="text-rose-deep/70 text-sm leading-relaxed">
+							{chapter.content}
+						</p>
+					</div>
 				</div>
-				<div class="bg-white rounded-2xl shadow-md shadow-pink-50 p-4 border border-pink-100 flex-1">
-					<h3 class="font-semibold text-pink-500 text-sm">22 October</h3>
-					<p class="text-pink-400 text-sm mt-1">
-						Ryan made the first move and sent his love first. A brave leap of faith on
-						<strong>22 October</strong>. The message that started everything.
-					</p>
-				</div>
-			</div>
-
-			<!-- Early Days -->
-			<div class="relative flex gap-4">
-				<div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center flex-shrink-0 z-10 border-2 border-white shadow-sm">
-					<span class="text-sm">🌱</span>
-				</div>
-				<div class="bg-white rounded-2xl shadow-md shadow-pink-50 p-4 border border-pink-100 flex-1">
-					<h3 class="font-semibold text-pink-500 text-sm">Getting to Know Each Other</h3>
-					<p class="text-pink-400 text-sm mt-1">
-						At first, chats were rare &mdash; short messages here and there. But slowly,
-						message by message, Ryan and Dira started getting closer. The conversations
-						became longer, deeper, and more meaningful.
-					</p>
-				</div>
-			</div>
-
-			<!-- Gradually Close -->
-			<div class="relative flex gap-4">
-				<div class="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center flex-shrink-0 z-10 border-2 border-white shadow-sm">
-					<span class="text-sm">🎮</span>
-				</div>
-				<div class="bg-white rounded-2xl shadow-md shadow-pink-50 p-4 border border-pink-100 flex-1">
-					<h3 class="font-semibold text-pink-500 text-sm">Growing Closer</h3>
-					<p class="text-pink-400 text-sm mt-1">
-						They gradually became inseparable. One thing that brought them even closer was
-						<strong>Mobile Legends</strong> &mdash; where Dira is always Ryan's support.
-						Whether it's in game or in real life, Dira (<em>Magirll</em>) has always been
-						Ryan's (<em>Maboyyy</em>) number one support.
-					</p>
-				</div>
-			</div>
-
-			<!-- First Meeting -->
-			<div class="relative flex gap-4">
-				<div class="w-10 h-10 rounded-full bg-pink-300 flex items-center justify-center flex-shrink-0 z-10 border-2 border-white shadow-sm">
-					<span class="text-sm">🫂</span>
-				</div>
-				<div class="bg-white rounded-2xl shadow-md shadow-pink-50 p-4 border border-pink-100 flex-1">
-					<h3 class="font-semibold text-pink-500 text-sm">14 December</h3>
-					<p class="text-pink-400 text-sm mt-1">
-						The day they finally met in person &mdash; <strong>14 December</strong>.
-						After weeks of chatting, calling, and gaming together, Ryan and Dira saw
-						each other face to face for the very first time. A moment they'll never forget.
-					</p>
-				</div>
-			</div>
-
-			<!-- Official -->
-			<div class="relative flex gap-4">
-				<div class="w-10 h-10 rounded-full bg-pink-400 flex items-center justify-center flex-shrink-0 z-10 border-2 border-white shadow-sm">
-					<span class="text-sm">💗</span>
-				</div>
-				<div class="bg-white rounded-2xl shadow-md shadow-pink-50 p-4 border border-pink-100 flex-1">
-					<h3 class="font-semibold text-pink-500 text-sm">12 December 2025</h3>
-					<p class="text-pink-400 text-sm mt-1">
-						The official anniversary date &mdash; <strong>12 December 2025</strong>.
-						The day Ryan and Dira chose to mark the beginning of their love story.
-						The day <em>Maboyyy</em> and <em>Magirll</em> became officially together.
-					</p>
-				</div>
-			</div>
-
-			<!-- Forever -->
-			<div class="relative flex gap-4">
-				<div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center flex-shrink-0 z-10 border-2 border-white shadow-sm">
-					<span class="text-sm text-white">∞</span>
-				</div>
-				<div class="bg-gradient-to-r from-pink-50 to-pink-100/50 rounded-2xl shadow-md shadow-pink-50 p-4 border border-pink-200 flex-1">
-					<h3 class="font-semibold text-pink-500 text-sm">Still Together, Hoping Forever</h3>
-					<p class="text-pink-400 text-sm mt-1">
-						Ryan and Dira are still going strong. Through every up and down, they hold
-						on to each other. Two hearts, one dream &mdash; <strong>forever together</strong>.
-						This is not just a love story; this is <em>their</em> story, and it's
-						far from over.
-					</p>
-				</div>
-			</div>
+			{/each}
 		</div>
 	</div>
 
-	<!-- Bottom Card -->
-	<div class="bg-white rounded-3xl shadow-lg shadow-pink-100 p-6 border border-pink-100 text-center mt-8">
-		<div class="text-3xl mb-2">💕</div>
-		<p class="text-pink-500 font-semibold">Ryan & Dira</p>
-		<p class="text-pink-300 text-sm">Maboyyy & Magirll</p>
-		<p class="text-pink-200 text-xs mt-2 italic">
-			"In a world full of temporary things, you are a perpetual feeling."
-		</p>
+	<!-- Closing -->
+	<div class="text-center py-10 animate-fade-in-up" style="animation-delay: 2.2s">
+		<div class="max-w-sm mx-auto love-card-static p-8 bg-gradient-to-br from-pink-50 to-pink-100/50">
+			<div class="text-4xl mb-4">💖</div>
+			<p class="text-rose-deep font-bold text-lg mb-2">Cerita kita belum berakhir...</p>
+			<p class="text-rose-muted text-sm leading-relaxed">
+				Ini baru permulaan dari seribu kenangan yang akan kita buat bersama.
+				Semoga selalu bersama, selalu saling mencintai, selamanya. 💕
+			</p>
+			<div class="mt-4 flex justify-center gap-1">
+				{#each Array(7) as _}
+					<span class="text-pink-300 text-xs">💗</span>
+				{/each}
+			</div>
+			<p class="text-pink-300 text-xs mt-3 italic">Forever & Always ∞</p>
+		</div>
 	</div>
 </div>
