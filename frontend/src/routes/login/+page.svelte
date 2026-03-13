@@ -22,7 +22,7 @@
 			await checkAuth();
 			goto('/dashboard');
 		} catch (err: any) {
-			error = err.message === 'invalid_pin'
+			error = err.code === 'invalid_pin' || err.message === 'invalid_pin'
 				? 'Kode akses salah, coba lagi ya 🥺'
 				: (err.message || 'Terjadi kesalahan');
 		} finally {

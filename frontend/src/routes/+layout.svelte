@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { checkAuth, isAuthenticated, user, authLoading, logout } from '$lib/stores/auth';
@@ -17,7 +17,7 @@
 
 	$effect(() => {
 		if (!$authLoading) {
-			const currentPath = page.url.pathname;
+			const currentPath = $page.url.pathname;
 			if (!$isAuthenticated && !publicRoutes.includes(currentPath)) {
 				goto('/login');
 			}
@@ -29,7 +29,7 @@
 
 	// Close menu on route change
 	$effect(() => {
-		page.url.pathname;
+		$page.url.pathname;
 		menuOpen = false;
 	});
 
@@ -57,8 +57,8 @@
 		{ href: '/our-story', emoji: '💕', label: 'Story' }
 	];
 
-	function isActive(href: string): boolean {
-		return page.url.pathname === href || page.url.pathname.startsWith(href + '/');
+	function isActive(currentPath: string, href: string): boolean {
+		return currentPath === href || currentPath.startsWith(href + '/');
 	}
 </script>
 
@@ -70,7 +70,7 @@
 		</div>
 	</div>
 {:else}
-	{#if $isAuthenticated && !publicRoutes.includes(page.url.pathname)}
+	{#if $isAuthenticated && !publicRoutes.includes($page.url.pathname)}
 		<!-- Top Navigation Bar -->
 		<nav class="bg-white/85 backdrop-blur-lg border-b border-pink-100 sticky top-0 z-50">
 			<div class="page-container py-3 flex items-center justify-between">
@@ -121,7 +121,7 @@
 							<a
 								href={link.href}
 								class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors
-									{isActive(link.href) ? 'text-pink-600 bg-pink-50 font-semibold' : 'text-rose-muted hover:bg-pink-50/50'}"
+									{isActive($page.url.pathname, link.href) ? 'text-pink-600 bg-pink-50 font-semibold' : 'text-rose-muted hover:bg-pink-50/50'}"
 							>
 								<span>{link.emoji}</span>
 								<span>{link.label}</span>
@@ -141,11 +141,11 @@
 	{/if}
 
 	<!-- Main Content -->
-	<main class="page-container py-6 md:py-8 {$isAuthenticated && !publicRoutes.includes(page.url.pathname) ? 'pb-24 sm:pb-8' : ''}">
+	<main class="page-container py-6 md:py-8 {$isAuthenticated && !publicRoutes.includes($page.url.pathname) ? 'pb-24 sm:pb-8' : ''}">
 		{@render children()}
 	</main>
 
-	{#if $isAuthenticated && !publicRoutes.includes(page.url.pathname)}
+	{#if $isAuthenticated && !publicRoutes.includes($page.url.pathname)}
 		<!-- Bottom Navigation (Mobile) -->
 		<nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-pink-100 z-50 sm:hidden">
 			<div class="flex justify-around px-2 py-2">
@@ -153,7 +153,7 @@
 					<a
 						href={link.href}
 						class="flex flex-col items-center gap-0.5 text-[10px] px-2 py-1.5 rounded-xl transition-colors min-w-[3rem]
-							{isActive(link.href) ? 'text-pink-600 bg-pink-50 font-semibold' : 'text-rose-muted hover:text-pink-400'}"
+							{isActive($page.url.pathname, link.href) ? 'text-pink-600 bg-pink-50 font-semibold' : 'text-rose-muted hover:text-pink-400'}"
 					>
 						<span class="text-lg">{link.emoji}</span>
 						<span>{link.label}</span>

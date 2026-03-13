@@ -10,9 +10,11 @@ const API_BASE = (PUBLIC_API_BASE_URL || '').replace(/\/$/, '');
 
 export class ApiError extends Error {
   status: number;
-  constructor(message: string, status: number) {
+  code?: string;
+  constructor(message: string, status: number, code?: string) {
     super(message);
     this.status = status;
+    this.code = code;
     this.name = 'ApiError';
   }
 }
@@ -32,8 +34,20 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   });
 
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw new ApiError(error.error || `HTTP ${res.status}`, res.status);
+    const errorData = await res.json().catch(() => ({ error: 'Request failed' }));
+    let errorMessage = `HTTP ${res.status}`;
+    let errorCode = undefined;
+    
+    if (errorData && typeof errorData.error === 'object') {
+      errorMessage = errorData.error.message || errorMessage;
+      errorCode = errorData.error.code;
+    } else if (errorData && typeof errorData.error === 'string') {
+      errorMessage = errorData.error;
+    } else if (errorData && errorData.message) {
+      errorMessage = errorData.message;
+    }
+
+    throw new ApiError(errorMessage, res.status, errorCode);
   }
 
   // Handle 204 No Content

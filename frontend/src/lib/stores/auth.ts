@@ -12,9 +12,13 @@ export const authLoading = writable(true);
 
 export async function checkAuth(): Promise<boolean> {
   try {
-    const data = await auth.me();
-    if (data.authenticated) {
-      user.set(data.user);
+    const response = await auth.me() as any;
+    // Base res returns `data: { session: ..., user?: User, access_code: ... }` on success
+    // Some endpoints may return nested types based on httpresponse.Success
+    if (response) {
+      // If user exists in response data, set it, otherwise it might just be session
+      const userData = response.data?.user || response.user || null;
+      user.set(userData);
       isAuthenticated.set(true);
       authLoading.set(false);
       return true;
