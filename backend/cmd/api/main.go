@@ -77,6 +77,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	router.Get("/", healthHandler.Get)
 	router.Get("/health", healthHandler.Get)
 
 	router.Route("/api", func(api chi.Router) {

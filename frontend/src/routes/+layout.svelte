@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { checkAuth, isAuthenticated, user, authLoading, logout } from '$lib/stores/auth';
@@ -17,7 +17,7 @@
 
 	$effect(() => {
 		if (!$authLoading) {
-			const currentPath = $page.url.pathname;
+			const currentPath = page.url.pathname;
 			if (!$isAuthenticated && !publicRoutes.includes(currentPath)) {
 				goto('/login');
 			}
@@ -29,7 +29,7 @@
 
 	// Close menu on route change
 	$effect(() => {
-		$page.url.pathname;
+		page.url.pathname;
 		menuOpen = false;
 	});
 
@@ -58,7 +58,7 @@
 	];
 
 	function isActive(href: string): boolean {
-		return $page.url.pathname === href || $page.url.pathname.startsWith(href + '/');
+		return page.url.pathname === href || page.url.pathname.startsWith(href + '/');
 	}
 </script>
 
@@ -70,7 +70,7 @@
 		</div>
 	</div>
 {:else}
-	{#if $isAuthenticated && !publicRoutes.includes($page.url.pathname)}
+	{#if $isAuthenticated && !publicRoutes.includes(page.url.pathname)}
 		<!-- Top Navigation Bar -->
 		<nav class="bg-white/85 backdrop-blur-lg border-b border-pink-100 sticky top-0 z-50">
 			<div class="page-container py-3 flex items-center justify-between">
@@ -141,11 +141,11 @@
 	{/if}
 
 	<!-- Main Content -->
-	<main class="page-container py-6 md:py-8 {$isAuthenticated && !publicRoutes.includes($page.url.pathname) ? 'pb-24 sm:pb-8' : ''}">
+	<main class="page-container py-6 md:py-8 {$isAuthenticated && !publicRoutes.includes(page.url.pathname) ? 'pb-24 sm:pb-8' : ''}">
 		{@render children()}
 	</main>
 
-	{#if $isAuthenticated && !publicRoutes.includes($page.url.pathname)}
+	{#if $isAuthenticated && !publicRoutes.includes(page.url.pathname)}
 		<!-- Bottom Navigation (Mobile) -->
 		<nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-pink-100 z-50 sm:hidden">
 			<div class="flex justify-around px-2 py-2">
