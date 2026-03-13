@@ -4,38 +4,43 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ryanprayoga/diraaax/backend/internal/services"
+	"github.com/ryanprayoga/diraaax/backend/internal/domain"
+	"github.com/ryanprayoga/diraaax/backend/internal/httpresponse"
 )
 
-type contextKey string
+type authContextKey string
 
-const AuthContextKey contextKey = "auth"
+const currentAuthKey authContextKey = "current_auth"
 
-func Auth(authService *services.AuthService, cookieName string) func(http.Handler) http.Handler {
+type SessionReader interface {
+	GetSession(ctx context.Context, token string) (*domain.AuthSession, error)
+}
+
+func RequireAuth(cookieName string, sessionReader SessionReader) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			cookie, err := r.Cookie(cookieName)
 			if err != nil || cookie.Value == "" {
-				http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+				httpresponse.Error(w, http.StatusUnauthorized, "unauthorized", "authentication required")
 				return
 			}
 
-			result, err := authService.GetSession(r.Context(), cookie.Value)
+			authSession, err := sessionReader.GetSession(r.Context(), cookie.Value)
 			if err != nil {
-				http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
+				httpresponse.Error(w, http.StatusUnauthorized, "unauthorized", "invalid or expired session")
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), AuthContextKey, result)
+			ctx := context.WithValue(r.Context(), currentAuthKey, authSession)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
 }
 
-func GetAuth(r *http.Request) *services.AuthResult {
-	result, ok := r.Context().Value(AuthContextKey).(*services.AuthResult)
+func CurrentAuth(r *http.Request) *domain.AuthSession {
+	authSession, ok := r.Context().Value(currentAuthKey).(*domain.AuthSession)
 	if !ok {
 		return nil
 	}
-	return result
+	return authSession
 }
