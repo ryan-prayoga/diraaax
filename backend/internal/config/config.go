@@ -16,18 +16,26 @@ type Config struct {
 	SessionSecret     string
 	UploadDir         string
 	CORSOrigin        string
+	CORSOrigins       []string
 	CookieSecure      bool
 	SessionTTL        time.Duration
 }
 
 func Load() (Config, error) {
+	origins := parseOrigins(getEnv("CORS_ORIGIN", "http://localhost:5173,http://127.0.0.1:5173"))
+	primaryOrigin := "http://localhost:5173"
+	if len(origins) > 0 {
+		primaryOrigin = origins[0]
+	}
+
 	cfg := Config{
 		AppPort:           getEnv("APP_PORT", "8080"),
 		DatabaseURL:       strings.TrimSpace(os.Getenv("DATABASE_URL")),
 		SessionCookieName: getEnv("SESSION_COOKIE_NAME", "diraaax_session"),
 		SessionSecret:     strings.TrimSpace(os.Getenv("SESSION_SECRET")),
 		UploadDir:         getEnv("UPLOAD_DIR", "./uploads"),
-		CORSOrigin:        strings.TrimRight(getEnv("CORS_ORIGIN", "http://localhost:5173"), "/"),
+		CORSOrigin:        strings.TrimRight(primaryOrigin, "/"),
+		CORSOrigins:       origins,
 		SessionTTL:        defaultSessionTTL,
 	}
 
@@ -51,4 +59,20 @@ func getEnv(key, fallback string) string {
 
 func isLocalOrigin(origin string) bool {
 	return strings.Contains(origin, "localhost") || strings.Contains(origin, "127.0.0.1")
+}
+
+func parseOrigins(raw string) []string {
+	parts := strings.Split(raw, ",")
+	origins := make([]string, 0, len(parts))
+	for _, part := range parts {
+		origin := strings.TrimRight(strings.TrimSpace(part), "/")
+		if origin == "" {
+			continue
+		}
+		origins = append(origins, origin)
+	}
+	if len(origins) == 0 {
+		return []string{"http://localhost:5173", "http://127.0.0.1:5173"}
+	}
+	return origins
 }

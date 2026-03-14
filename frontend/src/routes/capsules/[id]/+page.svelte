@@ -16,19 +16,30 @@
 	let loading = $state(true);
 	let error = $state('');
 	let opening = $state(false);
+	let creatingScene = $state(false);
 
-	const capsuleId = parseInt($page.params.id);
+	let newSceneType = $state<'intro' | 'photo' | 'message' | 'quote' | 'ending'>('message');
+	let newSceneTitle = $state('');
+	let newSceneContent = $state('');
+	let newSceneImage = $state('');
+
+	const capsuleId = Number.parseInt($page.params.id ?? '', 10);
 
 	async function fetchData() {
 		loading = true;
 		error = '';
 		try {
-			capsule = await capsulesApi.get(capsuleId);
-
-			if (capsule.is_opened) {
-				const sceneData = await capsulesApi.scenes(capsuleId);
-				scenes = sceneData.sort((a, b) => a.order_index - b.order_index);
+			if (!Number.isFinite(capsuleId) || capsuleId <= 0) {
+				throw new Error('ID capsule tidak valid');
 			}
+
+			const [capsuleData, sceneData] = await Promise.all([
+				capsulesApi.get(capsuleId),
+				capsulesApi.scenes(capsuleId)
+			]);
+
+			capsule = capsuleData;
+			scenes = [...sceneData].sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
 		} catch (err: any) {
 			error = err.message || 'Gagal memuat capsule';
 		} finally {
@@ -42,11 +53,37 @@
 		try {
 			capsule = await capsulesApi.open(capsuleId);
 			const sceneData = await capsulesApi.scenes(capsuleId);
-			scenes = sceneData.sort((a, b) => a.order_index - b.order_index);
+			scenes = [...sceneData].sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
 		} catch (err: any) {
 			error = err.message || 'Gagal membuka capsule';
 		} finally {
 			opening = false;
+		}
+	}
+
+	async function handleAddScene(e: Event) {
+		e.preventDefault();
+		if (!capsule) return;
+
+		creatingScene = true;
+		try {
+			const nextOrder = Math.max(0, ...scenes.map(scene => scene.order_index ?? scene.scene_order ?? 0)) + 1;
+			const created = await capsulesApi.addScene(capsuleId, {
+				scene_type: newSceneType,
+				scene_order: nextOrder,
+				title: newSceneTitle.trim() || undefined,
+				content: newSceneContent.trim() || undefined,
+				image_url: newSceneImage.trim() || undefined
+			});
+
+			scenes = [...scenes, created].sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0));
+			newSceneTitle = '';
+			newSceneContent = '';
+			newSceneImage = '';
+		} catch (err: any) {
+			error = err.message || 'Gagal menambah scene';
+		} finally {
+			creatingScene = false;
 		}
 	}
 
@@ -77,13 +114,52 @@
 			<!-- Capsule Title -->
 			<div class="text-center mb-10 animate-fade-in-up">
 				<div class="text-4xl mb-3">💌</div>
-				<h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent">
+				<h1 class="text-3xl md:text-4xl font-extrabold bg-linear-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent">
 					{capsule.title}
 				</h1>
 				<p class="text-rose-muted text-sm mt-2">Dibuka dengan cinta 💖</p>
 			</div>
 
 			<!-- Scenes -->
+			<div class="love-card-static p-4 md:p-5 mb-6">
+				<form class="space-y-3" onsubmit={handleAddScene}>
+					<p class="text-sm font-semibold text-rose-deep">Tambah scene baru 🎬</p>
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+						<select
+							bind:value={newSceneType}
+							class="px-4 py-2.5 rounded-2xl border border-pink-100 focus:border-pink-400 focus:outline-none"
+						>
+							<option value="intro">Intro</option>
+							<option value="photo">Photo</option>
+							<option value="message">Message</option>
+							<option value="quote">Quote</option>
+							<option value="ending">Ending</option>
+						</select>
+						<input
+							type="text"
+							bind:value={newSceneTitle}
+							placeholder="Judul scene (opsional)"
+							class="px-4 py-2.5 rounded-2xl border border-pink-100 focus:border-pink-400 focus:outline-none"
+						/>
+					</div>
+					<input
+						type="url"
+						bind:value={newSceneImage}
+						placeholder="Image URL (opsional)"
+						class="w-full px-4 py-2.5 rounded-2xl border border-pink-100 focus:border-pink-400 focus:outline-none"
+					/>
+					<textarea
+						bind:value={newSceneContent}
+						rows="2"
+						placeholder="Isi scene (opsional)"
+						class="w-full px-4 py-2.5 rounded-2xl border border-pink-100 focus:border-pink-400 focus:outline-none resize-none"
+					></textarea>
+					<button type="submit" class="btn-primary text-sm px-5 py-2.5 rounded-2xl" disabled={creatingScene}>
+						{creatingScene ? 'Menyimpan...' : 'Tambah Scene'}
+					</button>
+				</form>
+			</div>
+
 			{#if scenes.length > 0}
 				<CapsuleSceneRenderer {scenes} />
 			{:else}

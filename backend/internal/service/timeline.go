@@ -40,7 +40,7 @@ func (s *TimelineService) Create(
 
 	eventType := cleanString(input.EventType)
 	if eventType == "" {
-		eventType = "memory"
+		return nil, errors.Join(ErrInvalidInput, errors.New("event_type is required"))
 	}
 
 	return s.repository.Create(

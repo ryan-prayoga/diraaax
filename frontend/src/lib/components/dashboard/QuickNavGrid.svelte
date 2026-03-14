@@ -16,7 +16,7 @@
 		{#each navItems as item, i}
 			<a
 				href={item.href}
-				class="love-card p-4 text-center bg-gradient-to-br {item.color} border-pink-100 hover:border-pink-200 transition-all group"
+				class="love-card p-4 text-center bg-linear-to-br {item.color} border-pink-100 hover:border-pink-200 transition-all group"
 				style="animation-delay: {i * 80}ms"
 			>
 				<span class="text-2xl block mb-1 group-hover:scale-110 transition-transform duration-300">{item.emoji}</span>

@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/ryanprayoga/diraaax/backend/internal/domain"
 	"github.com/ryanprayoga/diraaax/backend/internal/utils"
@@ -39,6 +40,8 @@ func (r *AuthRepository) VerifyPINAndCreateSession(
 	}
 	defer tx.Rollback(ctx)
 
+	trimmedPIN := strings.TrimSpace(pin)
+
 	var accessCode domain.AccessCode
 	err = tx.QueryRow(ctx, `
 		SELECT id, label, created_by, code_type, code_hint
@@ -50,7 +53,7 @@ func (r *AuthRepository) VerifyPINAndCreateSession(
 		  AND crypt($1, code_hash) = code_hash
 		ORDER BY id DESC
 		LIMIT 1
-	`, strings.TrimSpace(pin)).Scan(
+	`, trimmedPIN).Scan(
 		&accessCode.ID,
 		&accessCode.Label,
 		&accessCode.CreatedBy,
@@ -58,8 +61,26 @@ func (r *AuthRepository) VerifyPINAndCreateSession(
 		&accessCode.CodeHint,
 	)
 	if err != nil {
+		if !errors.Is(err, pgx.ErrNoRows) {
+			return nil, err
+		}
+
+		// Fallback for bcrypt-hashed PINs.
+		accessCodePtr, bcryptErr := r.findActiveAccessCodeByPINBcrypt(ctx, tx, trimmedPIN)
+		if bcryptErr != nil {
+			return nil, bcryptErr
+		}
+		if accessCodePtr == nil {
+			return nil, pgx.ErrNoRows
+		}
+		accessCode = *accessCodePtr
+	}
+
+	resolvedUserID, err := r.resolveSessionUserID(ctx, tx, accessCode.CreatedBy)
+	if err != nil {
 		return nil, err
 	}
+	accessCode.CreatedBy = resolvedUserID
 
 	if _, err := tx.Exec(ctx, `
 		UPDATE access_codes
@@ -84,7 +105,7 @@ func (r *AuthRepository) VerifyPINAndCreateSession(
 		VALUES ($1, $2, $3, $4, $5::inet, $6, NOW())
 		RETURNING id, user_id, access_code_id, expires_at, last_seen_at, created_at
 	`,
-		accessCode.CreatedBy,
+		resolvedUserID,
 		accessCode.ID,
 		utils.HashSessionToken(token, r.sessionSecret),
 		userAgent,
@@ -103,8 +124,8 @@ func (r *AuthRepository) VerifyPINAndCreateSession(
 	}
 
 	var user *domain.User
-	if accessCode.CreatedBy != nil {
-		user, err = r.getUserByID(ctx, tx, *accessCode.CreatedBy)
+	if resolvedUserID != nil {
+		user, err = r.getUserByID(ctx, tx, *resolvedUserID)
 		if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 			return nil, err
 		}
@@ -119,6 +140,80 @@ func (r *AuthRepository) VerifyPINAndCreateSession(
 		User:       user,
 		AccessCode: &accessCode,
 	}, nil
+}
+
+func (r *AuthRepository) resolveSessionUserID(ctx context.Context, tx pgx.Tx, accessCodeCreatedBy *int64) (*int64, error) {
+	if accessCodeCreatedBy != nil {
+		return accessCodeCreatedBy, nil
+	}
+
+	var userID int64
+	err := tx.QueryRow(ctx, `
+		SELECT id
+		FROM users
+		WHERE is_active = true
+		ORDER BY id ASC
+		LIMIT 1
+	`).Scan(&userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userID, nil
+}
+
+func (r *AuthRepository) findActiveAccessCodeByPINBcrypt(ctx context.Context, tx pgx.Tx, pin string) (*domain.AccessCode, error) {
+	rows, err := tx.Query(ctx, `
+		SELECT id, label, created_by, code_type, code_hint, code_hash
+		FROM access_codes
+		WHERE is_active = true
+		  AND code_type = 'pin'
+		  AND (expires_at IS NULL OR expires_at > NOW())
+		  AND (max_uses IS NULL OR used_count < max_uses)
+		ORDER BY id DESC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			accessCode domain.AccessCode
+			codeHash   string
+		)
+
+		if scanErr := rows.Scan(
+			&accessCode.ID,
+			&accessCode.Label,
+			&accessCode.CreatedBy,
+			&accessCode.CodeType,
+			&accessCode.CodeHint,
+			&codeHash,
+		); scanErr != nil {
+			return nil, scanErr
+		}
+
+		if !looksLikeBcryptHash(codeHash) {
+			continue
+		}
+
+		if bcrypt.CompareHashAndPassword([]byte(codeHash), []byte(pin)) == nil {
+			return &accessCode, nil
+		}
+	}
+
+	if rowsErr := rows.Err(); rowsErr != nil {
+		return nil, rowsErr
+	}
+
+	return nil, nil
+}
+
+func looksLikeBcryptHash(hash string) bool {
+	return strings.HasPrefix(hash, "$2a$") ||
+		strings.HasPrefix(hash, "$2b$") ||
+		strings.HasPrefix(hash, "$2y$")
 }
 
 func (r *AuthRepository) GetSession(ctx context.Context, token string) (*domain.AuthSession, error) {
@@ -149,7 +244,7 @@ func (r *AuthRepository) GetSession(ctx context.Context, token string) (*domain.
 		)
 		SELECT
 			s.id,
-			s.user_id,
+			COALESCE(s.user_id, ac.created_by) AS actor_user_id,
 			s.access_code_id,
 			s.expires_at,
 			s.last_seen_at,
@@ -169,7 +264,7 @@ func (r *AuthRepository) GetSession(ctx context.Context, token string) (*domain.
 			u.updated_at
 		FROM active_session s
 		LEFT JOIN access_codes ac ON ac.id = s.access_code_id
-		LEFT JOIN users u ON u.id = s.user_id
+		LEFT JOIN users u ON u.id = COALESCE(s.user_id, ac.created_by)
 	`, utils.HashSessionToken(token, r.sessionSecret)).Scan(
 		&session.ID,
 		&session.UserID,

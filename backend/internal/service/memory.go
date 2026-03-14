@@ -27,7 +27,7 @@ func (s *MemoryService) Random(ctx context.Context) (*domain.Memory, error) {
 	item, err := s.repository.Random(ctx)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errors.Join(ErrNotFound, errors.New("no memories available"))
+			return nil, nil
 		}
 		return nil, err
 	}

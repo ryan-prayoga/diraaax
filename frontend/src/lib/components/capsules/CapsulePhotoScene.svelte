@@ -15,7 +15,7 @@
 			<img
 				src={imageUrl(scene.image_url)}
 				alt={scene.title || 'Memory'}
-				class="w-full aspect-[4/3] object-cover"
+				class="w-full aspect-4/3 object-cover"
 			/>
 		{/if}
 		{#if scene.title || scene.content}

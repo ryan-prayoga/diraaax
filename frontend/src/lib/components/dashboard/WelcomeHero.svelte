@@ -18,18 +18,18 @@
 	const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
 </script>
 
-<div class="love-card-static p-6 md:p-8 bg-gradient-to-br from-pink-50 to-pink-100/50 text-center relative overflow-hidden">
+<div class="love-card-static p-5 md:p-6 bg-linear-to-br from-pink-50 to-pink-100/60 text-center relative overflow-hidden">
 	<!-- Decorative circles -->
 	<div class="absolute -top-8 -right-8 w-24 h-24 bg-pink-200/20 rounded-full"></div>
 	<div class="absolute -bottom-4 -left-4 w-16 h-16 bg-pink-200/20 rounded-full"></div>
 
 	<div class="relative z-10">
-		<p class="text-pink-300 text-sm mb-1">Welcome back,</p>
-		<h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent mb-2">
+		<p class="text-pink-400 text-sm font-semibold mb-1">Welcome back,</p>
+		<h1 class="text-2xl md:text-3xl font-extrabold bg-linear-to-r from-pink-600 to-pink-500 bg-clip-text text-transparent mb-2 leading-tight">
 			{nickname} 💕
 		</h1>
-		<p class="text-pink-400 text-xs tracking-wider uppercase mb-4">Ryan & Dira's Universe</p>
-		<p class="text-rose-muted text-sm italic max-w-xs mx-auto leading-relaxed">
+		<p class="text-pink-500 text-[11px] md:text-xs tracking-[0.16em] uppercase mb-3 font-semibold">Ryan & Dira's Universe</p>
+		<p class="text-rose-text/75 text-sm italic max-w-sm mx-auto leading-relaxed">
 			"{randomQuote}"
 		</p>
 	</div>

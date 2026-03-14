@@ -32,6 +32,10 @@ func (h *MemoryHandler) Random(w http.ResponseWriter, r *http.Request) {
 		handleServiceError(w, err)
 		return
 	}
+	if item == nil {
+		httpresponse.Success(w, http.StatusOK, nil)
+		return
+	}
 	httpresponse.Success(w, http.StatusOK, item)
 }
 

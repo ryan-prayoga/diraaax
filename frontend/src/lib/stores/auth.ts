@@ -2,9 +2,9 @@
 // diraaax v2 — Auth Store (Svelte 5 runes)
 // ==========================================
 
-import { writable } from 'svelte/store';
-import { auth } from '$lib/api';
-import type { User } from '$lib/types';
+import { writable } from "svelte/store";
+import { auth } from "$lib/api";
+import type { User } from "$lib/types";
 
 export const user = writable<User | null>(null);
 export const isAuthenticated = writable(false);
@@ -12,13 +12,9 @@ export const authLoading = writable(true);
 
 export async function checkAuth(): Promise<boolean> {
   try {
-    const response = await auth.me() as any;
-    // Base res returns `data: { session: ..., user?: User, access_code: ... }` on success
-    // Some endpoints may return nested types based on httpresponse.Success
-    if (response) {
-      // If user exists in response data, set it, otherwise it might just be session
-      const userData = response.data?.user || response.user || null;
-      user.set(userData);
+    const response = (await auth.me()) as any;
+    if (response?.authenticated) {
+      user.set(response.user ?? null);
       isAuthenticated.set(true);
       authLoading.set(false);
       return true;

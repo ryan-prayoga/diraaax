@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/ryanprayoga/diraaax/backend/internal/domain"
@@ -232,4 +233,18 @@ func (r *CapsuleRepository) CreateScene(
 		return nil, err
 	}
 	return &item, nil
+}
+
+func (r *CapsuleRepository) Delete(ctx context.Context, id int64) error {
+	commandTag, err := r.pool.Exec(ctx, `
+		DELETE FROM love_capsules
+		WHERE id = $1
+	`, id)
+	if err != nil {
+		return err
+	}
+	if commandTag.RowsAffected() == 0 {
+		return pgx.ErrNoRows
+	}
+	return nil
 }

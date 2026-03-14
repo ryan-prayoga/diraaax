@@ -5,26 +5,37 @@
 /**
  * Format date to a readable string
  */
-export function formatDate(dateStr: string, style: 'short' | 'long' | 'relative' = 'long'): string {
+export function formatDate(
+  dateStr: string,
+  style: "short" | "long" | "relative" = "long",
+): string {
+  if (!dateStr) {
+    return "-";
+  }
+
   const date = new Date(dateStr);
 
-  if (style === 'relative') {
+  if (Number.isNaN(date.getTime())) {
+    return "-";
+  }
+
+  if (style === "relative") {
     return getRelativeTime(date);
   }
 
-  if (style === 'short') {
-    return date.toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
+  if (style === "short") {
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
     });
   }
 
-  return date.toLocaleDateString('id-ID', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
+  return date.toLocaleDateString("id-ID", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
   });
 }
 
@@ -36,8 +47,8 @@ function getRelativeTime(date: Date): string {
   const diffMs = now.getTime() - date.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return 'Hari ini';
-  if (diffDays === 1) return 'Kemarin';
+  if (diffDays === 0) return "Hari ini";
+  if (diffDays === 1) return "Kemarin";
   if (diffDays < 7) return `${diffDays} hari lalu`;
   if (diffDays < 30) return `${Math.floor(diffDays / 7)} minggu lalu`;
   if (diffDays < 365) return `${Math.floor(diffDays / 30)} bulan lalu`;
@@ -61,8 +72,12 @@ export function getAnniversaryInfo(anniversaryDate: string) {
   const anniversary = new Date(anniversaryDate);
   const now = new Date();
 
-  const totalDays = Math.floor((now.getTime() - anniversary.getTime()) / (1000 * 60 * 60 * 24));
-  const totalMonths = (now.getFullYear() - anniversary.getFullYear()) * 12 + (now.getMonth() - anniversary.getMonth());
+  const totalDays = Math.floor(
+    (now.getTime() - anniversary.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  const totalMonths =
+    (now.getFullYear() - anniversary.getFullYear()) * 12 +
+    (now.getMonth() - anniversary.getMonth());
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
   const days = now.getDate() - anniversary.getDate();
@@ -72,7 +87,7 @@ export function getAnniversaryInfo(anniversaryDate: string) {
     years,
     months,
     days: days < 0 ? 0 : days,
-    formattedDate: formatDate(anniversaryDate, 'long')
+    formattedDate: formatDate(anniversaryDate, "long"),
   };
 }
 
@@ -88,7 +103,7 @@ export function canOpenCapsule(openDate: string): boolean {
  */
 export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trimEnd() + '...';
+  return text.slice(0, maxLength).trimEnd() + "...";
 }
 
 /**

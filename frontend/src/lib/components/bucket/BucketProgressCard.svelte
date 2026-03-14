@@ -7,12 +7,12 @@
 		items: BucketItem[];
 	} = $props();
 
-	const total = items.length;
-	const done = items.filter(i => i.is_done).length;
-	const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+		const total = $derived(items.length);
+		const done = $derived(items.filter(i => i.is_done).length);
+		const percent = $derived(total > 0 ? Math.round((done / total) * 100) : 0);
 </script>
 
-<div class="love-card-static p-5 bg-gradient-to-br from-pink-50 to-white">
+<div class="love-card-static p-5 bg-linear-to-br from-pink-50 to-white">
 	<div class="flex items-center justify-between mb-3">
 		<div>
 			<p class="text-xs text-rose-muted uppercase tracking-wider font-semibold">Progress Kita</p>
@@ -32,7 +32,7 @@
 	<!-- Progress bar -->
 	<div class="h-3 bg-pink-100 rounded-full overflow-hidden">
 		<div
-			class="h-full bg-gradient-to-r from-pink-400 to-pink-500 rounded-full transition-all duration-1000 ease-out"
+			class="h-full bg-linear-to-r from-pink-400 to-pink-500 rounded-full transition-all duration-1000 ease-out"
 			style="width: {percent}%"
 		></div>
 	</div>

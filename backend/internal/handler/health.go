@@ -22,16 +22,12 @@ func (h *HealthHandler) Get(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
 	defer cancel()
 
-	status := "ok"
-	database := "up"
 	if err := h.pool.Ping(ctx); err != nil {
-		status = "degraded"
-		database = "down"
+		httpresponse.Error(w, http.StatusServiceUnavailable, "service_unavailable", "database unavailable")
+		return
 	}
 
 	httpresponse.Success(w, http.StatusOK, map[string]any{
-		"status":   status,
-		"service":  "diraaax-backend",
-		"database": database,
+		"status": "ok",
 	})
 }

@@ -8,11 +8,13 @@
 	}: {
 		moods: Mood[];
 	} = $props();
+
+	const safeMoods = $derived(Array.isArray(moods) ? moods : []);
 </script>
 
-{#if moods.length > 0}
+{#if safeMoods.length > 0}
 	<div class="space-y-2">
-		{#each moods as mood, i}
+		{#each safeMoods as mood, i}
 			<div
 				class="flex items-center gap-3 love-card-static p-3 animate-fade-in-up"
 				style="animation-delay: {i * 80}ms"
@@ -25,7 +27,7 @@
 							<span class="text-xs text-rose-muted">— {mood.user.nickname || mood.user.display_name}</span>
 						{/if}
 					</div>
-					<p class="text-xs text-rose-muted">{formatDate(mood.date, 'relative')}</p>
+						<p class="text-xs text-rose-muted">{formatDate(mood.date || mood.mood_date || new Date().toISOString(), 'relative')}</p>
 					{#if mood.note}
 						<p class="text-xs text-rose-deep/70 mt-1">{mood.note}</p>
 					{/if}

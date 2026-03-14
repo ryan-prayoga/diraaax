@@ -5,10 +5,12 @@
 
 	let {
 		memory,
-		rotation = 0
+		rotation = 0,
+		ondelete
 	}: {
 		memory: Memory;
 		rotation?: number;
+		ondelete?: (id: number) => void;
 	} = $props();
 </script>
 
@@ -31,7 +33,16 @@
 	{/if}
 
 	<div class="mt-2 text-center px-1">
-		<p class="text-xs font-bold text-rose-deep truncate">{memory.title}</p>
-		<p class="text-[10px] text-rose-muted">{formatDate(memory.memory_date, 'short')}</p>
+		<p class="text-xs font-bold text-rose-deep truncate">{memory.title || 'Untitled memory'}</p>
+		<p class="text-[10px] text-rose-muted">{formatDate(memory.memory_date || memory.created_at, 'short')}</p>
+		{#if ondelete}
+			<button
+				type="button"
+				onclick={() => ondelete?.(memory.id)}
+				class="mt-1 text-[10px] text-red-400 hover:text-red-500"
+			>
+				Hapus
+			</button>
+		{/if}
 	</div>
 </div>

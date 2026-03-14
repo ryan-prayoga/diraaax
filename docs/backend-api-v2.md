@@ -33,6 +33,7 @@ Error responses use:
 - Public routes:
   - `GET /health`
   - `POST /api/auth/verify-pin`
+  - `GET /api/auth/me`
 - Every other `/api/*` route requires a valid session cookie
 
 ## Routes
@@ -68,6 +69,7 @@ Error responses use:
 - `GET /api/capsules`
 - `GET /api/capsules/:id`
 - `POST /api/capsules`
+- `DELETE /api/capsules/:id`
 - `POST /api/capsules/:id/open`
 - `GET /api/capsules/:id/scenes`
 - `POST /api/capsules/:id/scenes`

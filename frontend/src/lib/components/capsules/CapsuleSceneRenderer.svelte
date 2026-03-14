@@ -25,6 +25,8 @@
 				<CapsuleMessageScene {scene} isQuote={true} />
 			{:else if scene.scene_type === 'ending'}
 				<CapsuleEndingScene {scene} />
+			{:else}
+				<CapsuleMessageScene {scene} />
 			{/if}
 		</div>
 	{/each}

@@ -3,13 +3,15 @@
 	import { formatDate, canOpenCapsule } from '$lib/utils';
 
 	let {
-		capsule
+		capsule,
+		ondelete
 	}: {
 		capsule: LoveCapsule;
+		ondelete?: (id: number) => void;
 	} = $props();
 
-	const isOpened = capsule.is_opened;
-	const canOpen = canOpenCapsule(capsule.open_date);
+		const isOpened = $derived(Boolean(capsule.is_opened));
+		const canOpen = $derived(canOpenCapsule(capsule.open_date));
 </script>
 
 <a
@@ -38,7 +40,7 @@
 	{/if}
 
 	<div class="flex items-start gap-4 pr-20 md:pr-24">
-		<div class="text-3xl flex-shrink-0">
+		<div class="text-3xl shrink-0">
 			{#if isOpened}
 				💝
 			{:else if canOpen}
@@ -60,8 +62,24 @@
 		</div>
 	</div>
 
+	{#if ondelete}
+		<div class="mt-3 pt-3 border-t border-pink-100/80">
+			<button
+				type="button"
+				onclick={(event) => {
+					event.preventDefault();
+					event.stopPropagation();
+					ondelete?.(capsule.id);
+				}}
+				class="text-xs text-red-400 hover:text-red-500"
+			>
+				Hapus Capsule
+			</button>
+		</div>
+	{/if}
+
 	<!-- Bottom glow effect -->
 	{#if canOpen && !isOpened}
-		<div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-pink-500 to-pink-400"></div>
+		<div class="absolute bottom-0 left-0 right-0 h-1 bg-linear-to-r from-pink-400 via-pink-500 to-pink-400"></div>
 	{/if}
 </a>

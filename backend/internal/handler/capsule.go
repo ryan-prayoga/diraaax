@@ -107,3 +107,18 @@ func (h *CapsuleHandler) CreateScene(w http.ResponseWriter, r *http.Request) {
 	}
 	httpresponse.Success(w, http.StatusCreated, item)
 }
+
+func (h *CapsuleHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	id, err := parseIDParam(r, "id")
+	if err != nil {
+		httpresponse.Error(w, http.StatusBadRequest, "invalid_request", "invalid capsule id")
+		return
+	}
+
+	if err := h.service.Delete(r.Context(), id); err != nil {
+		handleServiceError(w, err)
+		return
+	}
+
+	httpresponse.Success(w, http.StatusOK, map[string]int64{"deleted_id": id})
+}

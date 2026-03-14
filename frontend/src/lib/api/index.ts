@@ -2,81 +2,181 @@
 // diraaax v2 — API endpoints
 // ==========================================
 
-import { get, post, patch, del } from './client';
+import { get, post, patch, del } from "./client";
 import type {
-  AuthResponse,
-  User,
+  AuthSession,
   TimelineEvent,
   Memory,
   BucketItem,
   LoveCapsule,
   CapsuleScene,
   Mood,
-  LoveReason
-} from '$lib/types';
+  LoveReason,
+} from "$lib/types";
+
+function asArray<T>(value: unknown): T[] {
+  if (Array.isArray(value)) {
+    return value as T[];
+  }
+
+  if (value && typeof value === "object") {
+    const maybeItems = (value as { items?: unknown }).items;
+    if (Array.isArray(maybeItems)) {
+      return maybeItems as T[];
+    }
+
+    const maybeList = (value as { list?: unknown }).list;
+    if (Array.isArray(maybeList)) {
+      return maybeList as T[];
+    }
+  }
+
+  return [];
+}
+
+function asObjectOrNull<T extends object>(value: unknown): T | null {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as T;
+  }
+  return null;
+}
+
+function normalizeTimelineEvent(event: any): TimelineEvent {
+  return {
+    ...event,
+    event_date: event?.event_date ?? event?.date,
+    event_type: event?.event_type ?? event?.type,
+  } as TimelineEvent;
+}
+
+function normalizeMemory(memory: any): Memory {
+  return {
+    ...memory,
+    memory_date: memory?.memory_date ?? memory?.date,
+  } as Memory;
+}
+
+function normalizeCapsule(capsule: any): LoveCapsule {
+  return {
+    ...capsule,
+    is_opened: Boolean(capsule?.is_opened),
+    cover_image_url: capsule?.cover_image_url ?? capsule?.cover_url,
+  } as LoveCapsule;
+}
+
+function normalizeBucketItem(item: any): BucketItem {
+  const isDone = item?.is_done ?? item?.status === "done";
+  return {
+    ...item,
+    is_done: Boolean(isDone),
+  } as BucketItem;
+}
+
+function normalizeCapsuleScene(scene: any): CapsuleScene {
+  const order = scene?.order_index ?? scene?.scene_order ?? 0;
+  return {
+    ...scene,
+    order_index: Number(order),
+    scene_order: Number(order),
+  } as CapsuleScene;
+}
+
+function normalizeMood(mood: any): Mood {
+  return {
+    ...mood,
+    date: mood?.date ?? mood?.mood_date,
+  } as Mood;
+}
+
+function normalizeAuthSession(authSession: any): AuthSession {
+  return {
+    ...authSession,
+    authenticated: Boolean(authSession?.session),
+  } as AuthSession;
+}
 
 // ── Auth ──────────────────────────────────
 export const auth = {
-  me: () => get<AuthResponse>('/api/auth/me'),
+  me: async () => normalizeAuthSession(await get<AuthSession>("/api/auth/me")),
   verifyPin: (pin: string) =>
-    post<{ message: string; user: User }>('/api/auth/verify-pin', { pin }),
-  logout: () => post<void>('/api/auth/logout')
+    post<AuthSession>("/api/auth/verify-pin", { pin }).then(
+      normalizeAuthSession,
+    ),
+  logout: () => post<void>("/api/auth/logout"),
 };
 
 // ── Timeline ──────────────────────────────
 export const timeline = {
-  list: () => get<TimelineEvent[]>('/api/timeline'),
+  list: async () =>
+    asArray<any>(await get<unknown>("/api/timeline")).map(
+      normalizeTimelineEvent,
+    ),
   create: (data: Partial<TimelineEvent>) =>
-    post<TimelineEvent>('/api/timeline', data),
-  remove: (id: number) => del<void>(`/api/timeline/${id}`)
+    post<any>("/api/timeline", data).then(normalizeTimelineEvent),
+  remove: (id: number) => del<void>(`/api/timeline/${id}`),
 };
 
 // ── Memories ──────────────────────────────
 export const memories = {
-  list: () => get<Memory[]>('/api/memories'),
-  random: () => get<Memory>('/api/memories/random'),
-  create: (data: FormData) => post<Memory>('/api/memories', data),
-  remove: (id: number) => del<void>(`/api/memories/${id}`)
+  list: async () =>
+    asArray<any>(await get<unknown>("/api/memories")).map(normalizeMemory),
+  random: async () => {
+    const payload = await get<unknown>("/api/memories/random");
+    const memory = asObjectOrNull<any>(payload);
+    return memory ? normalizeMemory(memory) : null;
+  },
+  create: (data: FormData | Partial<Memory>) =>
+    post<any>("/api/memories", data).then(normalizeMemory),
+  remove: (id: number) => del<void>(`/api/memories/${id}`),
 };
 
 // ── Bucket List ───────────────────────────
 export const bucketList = {
-  list: () => get<BucketItem[]>('/api/bucket-list'),
+  list: async () =>
+    asArray<any>(await get<unknown>("/api/bucket-list")).map(
+      normalizeBucketItem,
+    ),
   create: (data: Partial<BucketItem>) =>
-    post<BucketItem>('/api/bucket-list', data),
+    post<any>("/api/bucket-list", data).then(normalizeBucketItem),
   toggle: (id: number) =>
-    patch<BucketItem>(`/api/bucket-list/${id}/toggle`),
-  remove: (id: number) => del<void>(`/api/bucket-list/${id}`)
+    patch<any>(`/api/bucket-list/${id}/toggle`).then(normalizeBucketItem),
+  remove: (id: number) => del<void>(`/api/bucket-list/${id}`),
 };
 
 // ── Capsules ──────────────────────────────
 export const capsules = {
-  list: () => get<LoveCapsule[]>('/api/capsules'),
-  get: (id: number) => get<LoveCapsule>(`/api/capsules/${id}`),
+  list: async () =>
+    asArray<any>(await get<unknown>("/api/capsules")).map(normalizeCapsule),
+  get: (id: number) => get<any>(`/api/capsules/${id}`).then(normalizeCapsule),
   create: (data: Partial<LoveCapsule>) =>
-    post<LoveCapsule>('/api/capsules', data),
+    post<any>("/api/capsules", data).then(normalizeCapsule),
   open: (id: number) =>
-    post<LoveCapsule>(`/api/capsules/${id}/open`),
+    post<any>(`/api/capsules/${id}/open`).then(normalizeCapsule),
+  remove: (id: number) => del<void>(`/api/capsules/${id}`),
   scenes: (id: number) =>
-    get<CapsuleScene[]>(`/api/capsules/${id}/scenes`),
+    get<unknown>(`/api/capsules/${id}/scenes`).then((items) =>
+      asArray<any>(items).map(normalizeCapsuleScene),
+    ),
   addScene: (id: number, data: Partial<CapsuleScene>) =>
-    post<CapsuleScene>(`/api/capsules/${id}/scenes`, data)
+    post<any>(`/api/capsules/${id}/scenes`, data).then(normalizeCapsuleScene),
 };
 
 // ── Moods ─────────────────────────────────
 export const moods = {
-  list: () => get<Mood[]>('/api/moods'),
+  list: async () =>
+    asArray<any>(await get<unknown>("/api/moods")).map(normalizeMood),
   create: (data: { mood: string; note?: string }) =>
-    post<Mood>('/api/moods', data)
+    post<any>("/api/moods", data).then(normalizeMood),
 };
 
 // ── Love Reasons ──────────────────────────
 export const loveReasons = {
-  list: () => get<LoveReason[]>('/api/love-reasons'),
+  list: async () =>
+    asArray<LoveReason>(await get<unknown>("/api/love-reasons")),
   create: (data: { message: string }) =>
-    post<LoveReason>('/api/love-reasons', data),
-  remove: (id: number) => del<void>(`/api/love-reasons/${id}`)
+    post<LoveReason>("/api/love-reasons", data),
+  remove: (id: number) => del<void>(`/api/love-reasons/${id}`),
 };
 
 // Re-export client utilities
-export { imageUrl } from './client';
+export { imageUrl } from "./client";

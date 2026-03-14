@@ -70,7 +70,7 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.RequestLogger)
 	router.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{cfg.CORSOrigin},
+		AllowedOrigins:   cfg.CORSOrigins,
 		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type"},
 		AllowCredentials: true,
@@ -82,12 +82,12 @@ func main() {
 
 	router.Route("/api", func(api chi.Router) {
 		api.Post("/auth/verify-pin", authHandler.VerifyPIN)
+		api.Get("/auth/me", authHandler.Me)
 
 		api.Group(func(private chi.Router) {
 			private.Use(middleware.RequireAuth(cfg.SessionCookieName, authService))
 
 			private.Post("/auth/logout", authHandler.Logout)
-			private.Get("/auth/me", authHandler.Me)
 
 			private.Get("/timeline", timelineHandler.List)
 			private.Post("/timeline", timelineHandler.Create)
@@ -106,6 +106,7 @@ func main() {
 			private.Get("/capsules", capsuleHandler.List)
 			private.Post("/capsules", capsuleHandler.Create)
 			private.Get("/capsules/{id}", capsuleHandler.Get)
+			private.Delete("/capsules/{id}", capsuleHandler.Delete)
 			private.Post("/capsules/{id}/open", capsuleHandler.Open)
 			private.Get("/capsules/{id}/scenes", capsuleHandler.ListScenes)
 			private.Post("/capsules/{id}/scenes", capsuleHandler.CreateScene)

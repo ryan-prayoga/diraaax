@@ -11,7 +11,7 @@
 <div class="text-center py-8 md:py-12 px-4">
 	<div class="text-5xl mb-6 animate-pulse-soft">💌</div>
 	{#if scene.title}
-		<h2 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent mb-4">
+		<h2 class="text-3xl md:text-4xl font-extrabold bg-linear-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent mb-4">
 			{scene.title}
 		</h2>
 	{/if}

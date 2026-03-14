@@ -32,7 +32,7 @@
 					alt={memory.title}
 					class="w-full h-48 object-cover"
 				/>
-				<div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+				<div class="absolute inset-0 bg-linear-to-t from-black/30 to-transparent"></div>
 			{/if}
 		</div>
 		<div class="p-5">

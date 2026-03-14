@@ -9,7 +9,7 @@
 </script>
 
 <div class="text-center py-12 px-4">
-	<div class="max-w-sm mx-auto love-card-static p-8 bg-gradient-to-br from-pink-50 to-pink-100/50">
+	<div class="max-w-sm mx-auto love-card-static p-8 bg-linear-to-br from-pink-50 to-pink-100/50">
 		<div class="text-4xl mb-4">💖</div>
 		{#if scene.title}
 			<h3 class="text-xl font-bold text-rose-deep mb-3">{scene.title}</h3>

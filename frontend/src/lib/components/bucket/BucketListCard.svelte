@@ -4,10 +4,12 @@
 
 	let {
 		item,
-		ontoggle
+		ontoggle,
+		ondelete
 	}: {
 		item: BucketItem;
 		ontoggle?: (id: number) => void;
+		ondelete?: (id: number) => void;
 	} = $props();
 </script>
 
@@ -15,7 +17,7 @@
 	<div class="flex items-start gap-3">
 		<button
 			onclick={() => ontoggle?.(item.id)}
-			class="flex-shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all mt-0.5
+			class="shrink-0 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all mt-0.5
 				{item.is_done
 					? 'bg-green-400 border-green-400 text-white'
 					: 'border-pink-300 hover:border-pink-400 hover:bg-pink-50'}"
@@ -47,7 +49,18 @@
 		</div>
 
 		{#if item.is_done}
-			<span class="text-xl flex-shrink-0">🎉</span>
+			<span class="text-xl shrink-0">🎉</span>
 		{/if}
 	</div>
+	{#if ondelete}
+		<div class="mt-2 pl-10">
+			<button
+				type="button"
+				onclick={() => ondelete?.(item.id)}
+				class="text-xs text-red-400 hover:text-red-500"
+			>
+				Hapus item
+			</button>
+		</div>
+	{/if}
 </div>

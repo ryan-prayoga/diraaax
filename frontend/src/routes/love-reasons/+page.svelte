@@ -66,7 +66,7 @@
 		{#if reasons.length > 1}
 			<button
 				onclick={handleShuffle}
-				class="text-sm text-pink-400 hover:text-pink-500 transition-colors flex-shrink-0 mt-1"
+				class="text-sm text-pink-400 hover:text-pink-500 transition-colors shrink-0 mt-1"
 				title="Acak"
 			>
 				🔀
@@ -81,17 +81,17 @@
 	{:else}
 		<!-- Add new reason form -->
 		<div class="love-card-static p-4 animate-fade-in-up">
-			<form onsubmit={handleAdd} class="flex gap-3">
+			<form onsubmit={handleAdd} class="flex flex-col sm:flex-row gap-3">
 				<input
 					type="text"
 					bind:value={newMessage}
 					placeholder="Tulis alasan baru... 💕"
-					class="flex-1 px-4 py-2.5 rounded-2xl border-2 border-pink-100 focus:border-pink-400 focus:outline-none text-sm bg-pink-50/30 placeholder:text-pink-200 transition-all"
+					class="w-full sm:flex-1 px-4 py-2.5 rounded-2xl border-2 border-pink-100 focus:border-pink-400 focus:outline-none text-sm bg-pink-50/30 placeholder:text-pink-200 transition-all"
 				/>
 				<button
 					type="submit"
 					disabled={adding || !newMessage.trim()}
-					class="btn-primary text-sm px-5 py-2.5 rounded-2xl disabled:opacity-50"
+					class="btn-primary text-sm px-5 py-2.5 rounded-2xl disabled:opacity-50 w-full sm:w-auto"
 				>
 					{adding ? '...' : '💝'}
 				</button>

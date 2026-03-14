@@ -82,8 +82,24 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 	authSession := middleware.CurrentAuth(r)
-	if authSession == nil {
-		httpresponse.Error(w, http.StatusUnauthorized, "unauthorized", "authentication required")
+	if authSession != nil {
+		httpresponse.Success(w, http.StatusOK, authSession)
+		return
+	}
+
+	cookie, err := r.Cookie(h.cookieName)
+	if err != nil || cookie.Value == "" {
+		httpresponse.Success(w, http.StatusOK, map[string]any{
+			"authenticated": false,
+		})
+		return
+	}
+
+	authSession, err = h.service.GetSession(r.Context(), cookie.Value)
+	if err != nil {
+		httpresponse.Success(w, http.StatusOK, map[string]any{
+			"authenticated": false,
+		})
 		return
 	}
 

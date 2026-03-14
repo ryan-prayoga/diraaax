@@ -141,3 +141,18 @@ func (s *CapsuleService) CreateScene(
 		cleanOptionalString(input.AnimationKey),
 	)
 }
+
+func (s *CapsuleService) Delete(ctx context.Context, id int64) error {
+	if id <= 0 {
+		return errors.Join(ErrInvalidInput, errors.New("invalid capsule id"))
+	}
+
+	if err := s.repository.Delete(ctx, id); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return errors.Join(ErrNotFound, errors.New("capsule not found"))
+		}
+		return err
+	}
+
+	return nil
+}

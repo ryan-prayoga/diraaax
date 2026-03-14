@@ -24,7 +24,7 @@
 {:else}
 	<!-- Letter-like message -->
 	<div class="max-w-md mx-auto">
-		<div class="love-card-static p-6 md:p-8 bg-gradient-to-br from-pink-50/50 to-white">
+		<div class="love-card-static p-6 md:p-8 bg-linear-to-br from-pink-50/50 to-white">
 			{#if scene.title}
 				<p class="text-rose-muted text-xs uppercase tracking-wider mb-3">{scene.title}</p>
 			{/if}

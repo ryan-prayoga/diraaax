@@ -1,4 +1,6 @@
 <script lang="ts">
+	import ErrorAlert from './ErrorAlert.svelte';
+
 	let {
 		message = 'Terjadi kesalahan',
 		onretry = undefined as (() => void) | undefined,
@@ -12,7 +14,7 @@
 
 <div class="love-card-static p-6 border-red-100! text-center {className}">
 	<div class="text-3xl mb-3">😿</div>
-	<p class="text-red-400 font-medium mb-1">{message}</p>
+	<ErrorAlert message={message} class="mb-3" />
 	<p class="text-rose-muted text-sm mb-4">Coba lagi nanti ya...</p>
 	{#if onretry}
 		<button

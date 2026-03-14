@@ -4,9 +4,11 @@
 	import EmptyState from '$lib/components/ui/EmptyState.svelte';
 
 	let {
-		memories = []
+		memories = [],
+		ondelete
 	}: {
 		memories: Memory[];
+		ondelete?: (id: number) => void;
 	} = $props();
 </script>
 
@@ -20,7 +22,7 @@
 	<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
 		{#each memories as memory, i}
 			<div class="animate-fade-in-up" style="animation-delay: {i * 100}ms">
-				<MemoryCard {memory} rotation={((i % 5) - 2) * 1.5} />
+				<MemoryCard {memory} rotation={((i % 5) - 2) * 1.5} {ondelete} />
 			</div>
 		{/each}
 	</div>

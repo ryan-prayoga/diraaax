@@ -63,7 +63,7 @@
 	<!-- Hero -->
 	<div class="text-center py-6 md:py-10 animate-fade-in-up">
 		<div class="text-5xl mb-4 animate-pulse-soft">💕</div>
-		<h1 class="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent mb-2">
+		<h1 class="text-3xl md:text-4xl font-extrabold bg-linear-to-r from-pink-500 to-pink-400 bg-clip-text text-transparent mb-2">
 			Our Love Story
 		</h1>
 		<p class="text-rose-muted text-sm">Ryan & Dira • Maboyyy & Magirll</p>
@@ -73,7 +73,7 @@
 	<!-- Story Timeline -->
 	<div class="relative">
 		<!-- Vertical line -->
-		<div class="absolute left-5 top-0 bottom-0 w-0.5 bg-gradient-to-b from-pink-400 via-pink-300 to-pink-100"></div>
+		<div class="absolute left-5 top-0 bottom-0 w-0.5 bg-linear-to-b from-pink-400 via-pink-300 to-pink-100"></div>
 
 		<div class="space-y-8">
 			{#each storyChapters as chapter, i}
@@ -104,7 +104,7 @@
 
 	<!-- Closing -->
 	<div class="text-center py-10 animate-fade-in-up" style="animation-delay: 2.2s">
-		<div class="max-w-sm mx-auto love-card-static p-8 bg-gradient-to-br from-pink-50 to-pink-100/50">
+		<div class="max-w-sm mx-auto love-card-static p-8 bg-linear-to-br from-pink-50 to-pink-100/50">
 			<div class="text-4xl mb-4">💖</div>
 			<p class="text-rose-deep font-bold text-lg mb-2">Cerita kita belum berakhir...</p>
 			<p class="text-rose-muted text-sm leading-relaxed">
